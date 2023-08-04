@@ -2351,6 +2351,7 @@ mod tests {
 		let (secp_ctx, network_graph, _, _, logger) = build_graph();
 		let (_, our_id, _, nodes) = get_nodes(&secp_ctx);
 		let payment_params = PaymentParameters::from_node_id(nodes[2], 42);
+		let payment_params2 = PaymentParameters::from_node_id(our_id, 42);
 		let scorer = ln_test_utils::TestScorer::new();
 		let keys_manager = ln_test_utils::TestKeysInterface::new(&[0u8; 32], Network::Testnet);
 		let random_seed_bytes = keys_manager.get_secure_random_bytes();
@@ -2363,6 +2364,8 @@ mod tests {
 
 		let route = get_route(&our_id, &payment_params, &network_graph.read_only(), None, 100, 42, Arc::clone(&logger), &scorer, &random_seed_bytes).unwrap();
 		assert_eq!(route.paths[0].hops.len(), 2);
+		let route2 = get_route(&nodes[2], &payment_params2, &network_graph.read_only(), None, 100, 42, Arc::clone(&logger), &scorer, &random_seed_bytes).unwrap();
+		assert_eq!(route2.paths[0].hops.len(), 2);
 
 		assert_eq!(route.paths[0].hops[0].pubkey, nodes[1]);
 		assert_eq!(route.paths[0].hops[0].short_channel_id, 2);
